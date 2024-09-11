@@ -1,0 +1,250 @@
+
+---
+title: "Análise de Vagas de Emprego em T.I."
+author: "Vinícius Nário Vasconcelos"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    theme: united
+---
+
+## Introdução 
+
+### 1.1 Declaração do Problema
+
+No contexto atual, a tecnologia da informação (T.I.) é um setor crucial que impulsiona a inovação e a competitividade em diversas indústrias. Com o avanço tecnológico e a digitalização global, a demanda por profissionais de T.I. tem crescido significativamente em todo o mundo. No entanto, entender como essas oportunidades de emprego estão distribuídas geograficamente, quais habilidades são mais requisitadas, e como o mercado está estruturado em termos de modalidades de trabalho e níveis de senioridade, são questões essenciais tanto para profissionais da área quanto para empregadores que buscam atrair os melhores talentos. Este projeto tem como objetivo filtrar e analisar as ofertas de emprego de T.I. a partir de um dataset abrangente de 1,3 milhões de vagas do LinkedIn, proporcionando uma visão detalhada do mercado de T.I. nos Estados Unidos, Austrália, Canadá e Reino Unido.
+
+### 1.2 Abordagem Metodológica
+
+Para abordar a declaração do problema, utilizaremos o dataset "1.3M Linkedin Jobs & Skills (2024)" disponível no Kaggle. O primeiro passo será consolidar os dados dispersos em três arquivos distintos, que incluem informações sobre habilidades, resumos de empregos e publicações de vagas, em um único dataset. Em seguida, filtraremos as vagas especificamente relacionadas à área de T.I. e procederemos com a análise das mesmas para entender as demandas do mercado.
+
+### 1.3 Abordagem Proposta
+
+A técnica adotada para abordar este problema inclui a união dos três datasets usando a chave `job_link`, que permite associar cada vaga às suas respectivas habilidades e resumos. Após a consolidação, utilizaremos uma lista de títulos de trabalho comumente associados à T.I. para filtrar as vagas relevantes. Este filtro é essencial para isolar as oportunidades que de fato pertencem ao setor de T.I., mesmo que o termo "T.I." não esteja explicitamente mencionado na descrição do cargo.
+
+### 1.4 Benefícios da Análise
+
+A análise resultante deste projeto fornecerá aos potenciais clientes, como profissionais de T.I. e empresas de recrutamento, uma visão clara das tendências de emprego no setor de T.I. em diferentes regiões. Será possível identificar quais habilidades são mais demandadas, as modalidades de trabalho (presencial, híbrido, remoto) mais comuns, e os níveis de senioridade mais frequentes nas ofertas de emprego. Essas informações são valiosas para tomada de decisões estratégicas, tanto para profissionais em busca de carreira quanto para empresas ajustarem suas estratégias de recrutamento.
+
+## Tratamento Inicial dos Dados
+
+### {.tabset .tabset-fade}
+
+#### Carregamento e Mesclagem dos Dados
+
+```{r, echo=TRUE, eval=FALSE}
+# Carregar os datasets
+jobSkills <- read.csv("C:/Users/Niciu/Downloads/Datasets/job_skills.csv")
+likedin <- read.csv("C:/Users/Niciu/Downloads/Datasets/linkedin_job_postings.csv")
+sumary <- read.csv("C:/Users/Niciu/Downloads/Datasets/job_summary.csv")
+
+# Mesclar jobSkills e likedin com base em "job_link"
+merged_data <- merge(jobSkills, likedin, by = "job_link")
+
+# Mesclar o resultado anterior com sumary com base em "job_link"
+final_data <- merge(merged_data, sumary, by = "job_link")
+
+# Visualizar as primeiras linhas do dataset final
+head(final_data)
+
+# Salvar o dataset final em um arquivo CSV
+write.csv(final_data, "C:/Users/Niciu/Downloads/Datasets/dataset.csv", row.names = FALSE)
+```
+
+#### Filtragem das Vagas de T.I.
+
+```{r, echo=TRUE, eval=FALSE}
+# Carregar o dataset consolidado
+dataset <- read.csv("C:/Users/Niciu/Downloads/Datasets/dataset.csv")
+
+# Verificar todas as posições de trabalho (search_position) que existem no dataset
+unique_positions <- unique(dataset$search_position)
+
+# Visualizar os valores únicos
+print(unique_positions)
+
+# Definir os títulos de trabalho relacionados à I.T.
+it_positions <- c("Computer Operator", "Developer", "Programmer-Analyst", "Electronics-Test Engineer",
+                  "Data Communications Analyst", "Computer Programmer", "Computer Systems Hardware Analyst",
+                  "Technical Support Specialist", "Computer Security Specialist", "Electronics Technician",
+                  "Software Engineer", "Systems Analyst", "Information Scientist", "Computer Security Coordinator",
+                  "Data Base Administrator", "Electrical Engineer", "Electrical-Design Engineer",
+                  "Electrical-Research Engineer", "Electronics Assembler", "Test Technician",
+                  "Technical Operator", "Electrical Technician", "Technical Coordinator", 
+                  "Field Service Engineer", "Communications Coordinator", "Manufacturing Engineer",
+                  "Communications Consultant", "Software Engineer", "Field Engineer Specialist",
+                  "Systems Engineer", "Network Engineer")
+
+# Filtrar o dataset para incluir apenas os empregos relacionados à I.T.
+it_jobs <- dataset[dataset$search_position %in% it_positions, ]
+
+# Salvar o dataset filtrado em um arquivo CSV chamado it_jobs.csv
+write.csv(it_jobs, "C:/Users/Niciu/Downloads/Datasets/it_jobs.csv", row.names = FALSE)
+```
+
+### Explicação do Tratamento de Dados
+
+O dataset original era composto por três arquivos separados: `jobSkills.csv`, `linkedin_job_postings.csv`, e `job_summary.csv`. A primeira etapa foi unir esses três arquivos em um único dataset usando a coluna `job_link` como chave estrangeira. Isso nos permitiu consolidar todas as informações relevantes em um único dataframe, facilitando o processamento subsequente.
+
+Após a consolidação, realizamos uma filtragem específica para isolar as vagas de emprego relacionadas ao setor de T.I. Essa filtragem foi baseada em uma lista pré-definida de títulos de trabalho que comumente pertencem à área de T.I. O dataset resultante foi então salvo como `it_jobs.csv` para análise posterior.
+
+## Visão Geral do Dataset
+
+### {.tabset .tabset-fade}
+
+#### Fonte dos Dados
+Os dados utilizados neste projeto são provenientes de um dataset do LinkedIn que contém informações sobre 1,3 milhões de vagas de emprego e habilidades relacionadas ao setor de T.I. O propósito original desses dados era fornecer uma visão abrangente das oportunidades de emprego disponíveis em várias partes do mundo, permitindo uma análise detalhada das tendências no mercado de trabalho de T.I.
+
+O dataset foi coletado em 2024 e inclui diversas variáveis importantes, como o título do trabalho (search_position), a cidade (search_city), o país (search_country), o nível do trabalho (job_level), e o tipo de emprego (job_type). Uma peculiaridade observada nos dados de origem é a presença de caracteres especiais e valores ausentes, que necessitam de tratamento cuidadoso para garantir a integridade da análise subsequente.
+
+#### Importação e Limpeza de Dados
+Para garantir a precisão e a consistência da análise, é crucial realizar uma limpeza minuciosa dos dados. Aqui estão as etapas que foram seguidas:
+
+```{r, echo=TRUE}
+# Carregar o dataset filtrado
+it_jobs <- read.csv("C:/Users/Niciu/Downloads/Datasets/it_jobs.csv", fileEncoding = "UTF-8")
+
+# Substituir caracteres não ASCII por um caractere vazio
+it_jobs$search_position <- gsub("[^[:print:]]", "", it_jobs$search_position)
+it_jobs$search_city <- gsub("[^[:print:]]", "", it_jobs$search_city)
+it_jobs$search_country <- gsub("[^[:print:]]", "", it_jobs$search_country)
+it_jobs$job_level <- gsub("[^[:print:]]", "", it_jobs$job_level)
+it_jobs$job_type <- gsub("[^[:print:]]", "", it_jobs$job_type)
+```
+
+**Explicação das Etapas de Limpeza:**
+
+**Remoção de Caracteres Não ASCII:** Muitos dos valores no dataset continham caracteres especiais que não eram suportados ou que poderiam causar problemas na análise posterior. Para lidar com isso, utilizamos a função gsub() para remover esses caracteres não ASCII. Essa etapa foi essencial para padronizar os dados e evitar erros de codificação durante as análises subsequentes.
+
+```{r, echo=TRUE}
+# Mostrar os valores unicos das colunas relevantes
+unique_search_country <- unique(it_jobs$search_country)
+unique_search_position <- unique(it_jobs$search_position)
+unique_job_level <- unique(it_jobs$job_level)
+unique_job_type <- unique(it_jobs$job_type)
+```
+
+**3.4 Conjunto de Dados Final**
+a seguir segue os valores únicos das colunas mais relevantes, que fornecem uma visão condensada das categorias de dados disponíveis:
+
+**search_country:** r unique_search_country
+**search_position:** r unique_search_position
+**job_level:** r unique_job_level
+**job_type:** r unique_job_type
+
+Esses valores únicos mostram as diferentes categorias e níveis que estão disponíveis no dataset, ajudando a entender a variedade e a abrangência dos dados.
+
+**3.5 Informações Resumidas das Variáveis de Interesse**
+
+Abaixo, segue um resumo das principais variáveis no dataset:
+
+**search_position:** Esta variável representa o cargo do trabalho.
+
+**search_city:** Indica a cidade onde a vaga está localizada. As cidades mais frequentes no dataset incluem grandes centros urbanos conhecidos por seu foco em tecnologia.
+
+**search_country:** O país onde a vaga está disponível. A distribuição mostra que a maioria das vagas está concentrada nos Estados Unidos, seguido por países como Reino Unido e Canadá.
+
+**job_level:** Reflete o nível de senioridade do trabalho (e.g., Mid-senior, Associate). Essa variável é crucial para entender a demanda por diferentes níveis de experiência no setor.
+
+**job_type:** Indica o tipo de emprego, como "OnSite", "Remote", "Hybrid", etc. Essa variável nos ajuda a compreender as preferências contratuais no mercado de trabalho de T.I.
+
+Essas variáveis oferecem uma visão clara sobre o panorama das vagas de emprego em T.I., permitindo uma análise detalhada das tendências do mercado de trabalho global.
+
+## Análise Geral do Dataset
+
+### {.tabset .tabset-fade}
+
+#### Visão da Distribuição de Vagas por País
+```{r, echo=TRUE}
+# Instalar e carregar o pacote ggplot2 se ainda não estiver instalado
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+# Calcular a distribuição por país
+country_distribution <- as.data.frame(table(it_jobs$search_country))
+
+# Calcular as porcentagens
+country_distribution$Percentage <- round(country_distribution$Freq / sum(country_distribution$Freq) * 100, 1)
+
+# Criar um rótulo que combina o nome do país e a porcentagem
+country_distribution$Label <- paste0(country_distribution$Var1, " (", country_distribution$Percentage, "%)")
+
+# Criar o gráfico de pizza com porcentagens nos rótulos da legenda
+ggplot(country_distribution, aes(x = "", y = Freq, fill = Label)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y") +
+  labs(title = "Distribuição das Vagas por País (search_country)",
+       fill = "País") +
+  theme_void() + # Remove o plano de fundo e os eixos para um gráfico de pizza puro
+  theme(legend.title = element_blank()) # Remove o título da legenda para clareza
+```
+
+**Visão da Distribuição de Vagas por País**
+
+Com base no gráfico de pizza gerado, que ilustra a distribuição das vagas de emprego no setor de T.I. em diferentes países, podemos observar alguns insights significativos.
+
+O gráfico revela que a grande maioria das vagas de emprego está concentrada nos **Estados Unidos**, representando **82,8%** do total. Essa predominância é consistente com a posição dos Estados Unidos como líder global em tecnologia, abrigando inúmeras empresas de tecnologia de ponta, desde startups até gigantes do setor. Esse volume expressivo de vagas sugere que o mercado norte-americano continua sendo uma referência central para profissionais de T.I. em busca de oportunidades.
+
+Em segundo lugar, mas com uma proporção significativamente menor, está o **Reino Unido**, que responde por **9,8%** das vagas. O Reino Unido é outro polo importante de inovação tecnológica. Essa participação, embora menor em comparação com os Estados Unidos, ainda destaca a relevância do mercado britânico no cenário global de T.I.
+
+O **Canadá** vem logo atrás com **5,1%** das vagas. O Canadá tem se consolidado como um destino atrativo para empresas de tecnologia, tanto por seu ambiente regulatório favorável quanto por sua força de trabalho altamente qualificada. A presença significativa de vagas no Canadá indica um mercado em crescimento.
+
+Por último, a  **Austrália ** representa uma pequena parcela das vagas de emprego no setor de T.I., com  **2,3% ** do total. Embora essa participação seja modesta em comparação com outros países como os Estados Unidos e o Reino Unido, ela sugere que há uma presença de oportunidades de trabalho em T.I. no país.
+
+**Considerações Finais**
+
+Essa distribuição reflete as dinâmicas globais do mercado de trabalho em T.I., onde os Estados Unidos lideram com uma vasta maioria das vagas, seguidos por outros países desenvolvidos com mercados tecnológicos robustos. Profissionais de T.I. que buscam oportunidades de trabalho podem considerar essas informações ao planejar suas carreiras, direcionando esforços para os mercados com maior oferta de vagas. Além disso, as empresas podem usar esses dados para entender melhor a distribuição global do talento em T.I. e ajustar suas estratégias de recrutamento conforme necessário.
+
+Esse panorama também pode ser útil para governos e instituições educacionais que buscam alinhar suas políticas e currículos às demandas do mercado global, garantindo que seus profissionais estejam preparados para competir nas regiões mais dinâmicas e inovadoras do setor de T.I.
+
+#### Visão Sobre os Cargos
+```{r, echo=TRUE}
+# Instalar e carregar o pacote ggplot2 se ainda não estiver instalado
+if(!require(ggplot2)) install.packages("ggplot2")
+library(ggplot2)
+
+# Calcular a distribuição por posição
+position_distribution <- as.data.frame(table(it_jobs$search_position))
+
+# Ordenar os dados pela frequência para melhor visualização
+position_distribution <- position_distribution[order(-position_distribution$Freq), ]
+
+# Criar o gráfico de barras
+ggplot(position_distribution, aes(x = reorder(Var1, -Freq), y = Freq, fill = Var1)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribuição das Vagas por Posição (search_position)",
+       x = "Posição",
+       y = "Frequência") +
+  theme_minimal() + # Aplica um tema minimalista ao gráfico
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), # Rotaciona os labels do eixo X para melhor legibilidade
+        legend.position = "none") # Remove a legenda para focar nos labels das barras
+```
+
+Com base no gráfico de barras que mostra a distribuição das vagas por posição no dataset de empregos de T.I., podemos extrair algumas observações importantes.
+
+**Análise da Distribuição das Vagas por Posição**
+
+1. **Predominância de Cargos de Operação e Programação de Computadores**:
+   - As posições de **"Computer Operator"** e **"Programmer"** destacam-se significativamente em termos de frequência. O cargo de "Computer Operator" é o mais comum, com mais de 4.000 vagas, seguido de perto por "Programmer" com um número um pouco menor.
+   - Isso sugere que há uma alta demanda por profissionais que possuem habilidades operacionais e de programação. Tais posições são cruciais para o funcionamento e desenvolvimento de sistemas de software, indicando que as empresas estão fortemente focadas em garantir que suas operações e desenvolvimentos de software sejam bem mantidos e aprimorados.
+
+2. **Diversidade de Posições Técnicas**:
+   - Além das posições principais, outras posições técnicas como **"Data Communications Analyst"**, **"Computer Systems Hardware Analyst"**, e **"Technical Support Specialist"** também aparecem com frequências elevadas, o que indica uma necessidade por uma variedade de habilidades técnicas especializadas.
+   - Essas funções são fundamentais para a gestão da infraestrutura de TI e para o suporte ao usuário final, o que é essencial em qualquer organização que depende fortemente da tecnologia.
+
+3. **Presença Notável de Engenheiros de Hardware e Software**:
+   - Posições como **"Electronics Engineer"**, **"Software Engineer"**, e **"Electrical-Design Engineer"** também têm uma presença significativa. Isso reflete a demanda contínua por engenheiros que possam projetar, desenvolver, e manter sistemas de hardware e software.
+   - A presença de engenheiros eletrônicos e de design elétrico destaca o papel da engenharia de hardware, especialmente em setores onde o desenvolvimento de dispositivos eletrônicos e sistemas embutidos é crítico.
+
+4. **Distribuição Relativamente Menor para Funções de Coordenação e Suporte**:
+   - Posições como **"Technical Coordinator"**, **"Field Service Engineer"**, e **"Communications Coordinator"** aparecem com frequências menores, o que pode indicar que essas funções, embora importantes, são menos numerosas ou talvez estejam centralizadas em menos vagas que exigem habilidades mais generalistas ou de suporte técnico em campo.
+   - Isso pode sugerir que tais funções são mais especializadas e, portanto, menos comuns em comparação com as posições que requerem habilidades técnicas e operacionais mais amplas.
+
+**Considerações Finais**
+
+O gráfico de barras ilustra uma clara predominância de posições operacionais e de programação no setor de T.I., com uma forte presença de vagas para operadores de computador e programadores. A diversidade de posições técnicas reflete a ampla gama de habilidades necessárias para sustentar a infraestrutura tecnológica em organizações de todos os tamanhos.
+
+Para profissionais de T.I., esse gráfico oferece uma visão sobre quais posições estão mais em demanda, o que pode ajudar na decisão sobre quais habilidades desenvolver ou em quais áreas focar. Para as empresas, entender essa distribuição pode ser útil na estratégia de recrutamento, permitindo-lhes alinhar suas ofertas de emprego com as tendências do mercado e as necessidades organizacionais.
