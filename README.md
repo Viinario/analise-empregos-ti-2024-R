@@ -1,12 +1,8 @@
-Aqui está o `README` para o seu projeto no GitHub:
-
----
-
 # Análise de Vagas de Emprego em T.I.
 
 ## Autor
 Vinícius Nário Vasconcelos  
-Data: `r Sys.Date()`
+Data: 10/09/24
 
 ## Índice
 - [Análise de Vagas de Emprego em T.I.](#análise-de-vagas-de-emprego-em-ti)
@@ -84,7 +80,3 @@ A análise revela uma forte demanda por operadores de computador e programadores
 ## Artigo Publicado
 
 Para uma análise mais detalhada das tendências de emprego no mercado de T.I., acesse o artigo publicado [aqui](https://rpubs.com/Viinario/analise-tendencias-mercado-ti-2024).
-
----
-
-Este README oferece uma visão clara e estruturada do seu projeto de análise de vagas de emprego em T.I. no GitHub.
